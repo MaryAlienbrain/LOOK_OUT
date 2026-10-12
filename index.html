@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LOOK OUT | Personal Safety Network</title>
+
+    <style>
+        * {
+        box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f4f5;
+            color: #18181b;
+        }
+
+        .app {
+            max-width: 430px;
+            min-height: 100vh;
+            margin: auto;
+            background: white;
+        }
+
+        /* HEADER */
+
+        header {
+            padding: 22px 20px;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .network-status {
+            font-size: 12px;
+            padding: 7px 10px;
+            border-radius: 20px;
+            background: #e9f8ed;
+            color: #18733a;
+        }
+
+        /* MAIN */
+
+        main {
+            padding: 20px;
+        }
+
+        .hero {
+            background: #18181b;
+            color: white;
+            padding: 25px;
+            border-radius: 24px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: 29px;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: #d4d4d8;
+            line-height: 1.5;
+        }
+
+        /* CARDS */
+
+        .card {
+            border: 1px solid #e4e4e7;
+            border-radius: 20px;
+            padding: 19px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        }
+
+        .card h2 {
+            margin-bottom: 8px;
+            font-size: 19px;
+        }
+
+        .description {
+            font-size: 13px;
+            color: #71717a;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        /* BUTTONS */
+
+        button {
+            width: 100%;
+            border: none;
+            border-radius: 15px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .activate-button {
+            background: #18181b;
+            color: white;
+        }
+
+        .panic-button {
+            background: #b91c1c;
+            color: white;
+            font-size: 20px;
+            padding: 22px;
+        }
+
+        .secondary-button {
+            background: #eeeeef;
+            color: #18181b;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* SAFETY STATUS */
+
+        .status-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f4f4f5;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .status-row:last-child {
+            border-bottom: none;
+        }
+
+        /* MAP */
+
+        .map {
+            height: 190px;
+            margin-top: 15px;
+            border-radius: 16px;
+            background:
+                linear-gradient(35deg, transparent 45%, white 46%, white 50%, transparent 51%),
+                linear-gradient(-30deg, transparent 45%, white 46%, white 50%, transparent 51%),
+                #dfe4e7;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .location-dot {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: #b91c1c;
+            border: 5px solid white;
+            border-radius: 50%;
+            left: 50%;
+            top: 45%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+
+        /* ALERT */
+
+        .alert {
+            display: none;
+            margin-top: 15px;
+            padding: 18px;
+            border-radius: 18px;
+            background: #fff1f2;
+            border: 2px solid #b91c1c;
+            color: #7f1d1d;
+        }
+
+        .alert-title {
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .alert p {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* NETWORK SIMULATION */
+
+        .network-box {
+            background: #18181b;
+            color: #d4d4d8;
+            padding: 15px;
+            border-radius: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            margin-top: 15px;
+            min-height: 120px;
+        }
+
+        .success {
+            color: #86efac;
+        }
+
+        .warning {
+            color: #fde68a;
+        }
+
+        .danger-text {
+            color: #fca5a5;
+        }
+
+        /* RESPONDER */
+
+        .responder-status {
+            margin-top: 15px;
+            padding: 13px;
+            border-radius: 13px;
+            background: #f4f4f5;
+            font-size: 14px;
+        }
+
+        /* FOOTER */
+
+        .note {
+            color: #71717a;
+            font-size: 11px;
+            line-height: 1.5;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div class="logo">
+            LOOK OUT
+        </div>
+
+        <div class="network-status" id="networkStatus">
+            ● Network ready
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <!-- INTRO -->
+
+        <section class="hero">
+
+            <h1>
+                You shouldn't have to live in fear.
+            </h1>
+
+            <p>
+                LOOK OUT is a personal safety concept designed to help people
+                request assistance quickly — even when normal network
+                connectivity is unavailable.
+            </p>
+
+        </section>
+
+
+        <!-- PERSONAL SAFETY -->
+
+        <section class="card">
+
+            <h2>
+                🛡️ Personal Safety
+            </h2>
+
+            <p class="description">
+                Activate your safety device when leaving home, going to work,
+                university, shopping, exercising or simply moving around.
+            </p>
+
+            <button
+                class="activate-button"
+                id="activateButton"
+                onclick="activateSafety()">
+
+                ACTIVATE SAFETY
+
+            </button>
+
+
+            <div
+                class="status-box"
+                id="safetyStatus">
+
+                <div class="status-row">
+                    <span>Safety status</span>
+                    <strong>ACTIVE</strong>
+                </div>
+
+                <div class="status-row">
+                    <span>Device</span>
+                    <strong>BCN-042</strong>
+                </div>
+
+                <div class="status-row">
+                    <span>Location</span>
+                    <strong>Available</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- PANIC BUTTON -->
+
+        <section class="card">
+
+            <h2>
+                🚨 Emergency
+            </h2>
+
+            <p class="description">
+
+                If you feel unsafe or experience an emergency,
+                press the physical LOOK OUT button.
+
+                One discreet press starts the emergency process.
+
+            </p>
+
+
+            <button
+                class="panic-button"
+                onclick="activateEmergency()">
+
+                🚨 PRESS FOR HELP
+
+            </button>
+
+
+            <!-- EMERGENCY ALERT -->
+
+            <div
+                class="alert"
+                id="emergencyAlert">
+
+                <div class="alert-title">
+
+                    🚨 EMERGENCY ALERT ACTIVE
+
+                </div>
+
+                <p>
+
+                    <strong>Device:</strong> BCN-042
+                    <br>
+
+                    <strong>Location:</strong>
+                    -26.2041, 28.0473
+
+                    <br>
+
+                    <strong>Identity:</strong>
+                    Protected
+
+                    <br>
+
+                    <strong>Priority:</strong>
+                    HIGH
+
+                    <br>
+
+                    <strong>Nearest responder:</strong>
+                    0.8 km
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- LOCATION -->
+
+        <section class="card">
+
+            <h2>
+                📍 Location
+            </h2>
+
+            <p class="description">
+
+                The device can attempt to determine your location
+                independently of mobile data.
+
+            </p>
+
+
+            <div class="map">
+
+                <div class="location-dot"></div>
+
+            </div>
+
+
+            <div
+                class="status-box"
+                id="locationStatus"
+                style="display:block;">
+
+                <div class="status-row">
+
+                    <span>Position</span>
+
+                    <strong>Confirmed</strong>
+
+                </div>
+
+                <div class="status-row">
+
+                    <span>Mobile network</span>
+
+                    <strong id="mobileNetwork">
+                        Connected
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- OFFLINE NETWORK -->
+
+        <section class="card">
+
+            <h2>
+                📡 Network resilience
+            </h2>
+
+            <p class="description">
+
+                DEMO: simulate a situation where the normal network
+                disappears. LOOK OUT attempts to relay the emergency
+                through nearby devices or gateways.
+
+            </p>
+
+
+            <button
+                class="secondary-button"
+                onclick="simulateNetworkFailure()">
+
+                SIMULATE NETWORK FAILURE
+
+            </button>
+
+
+            <div
+                class="network-box"
+                id="networkLog">
+
+                SYSTEM READY<br>
+                Waiting for emergency event...
+
+            </div>
+
+        </section>
+
+
+
+        <!-- RESPONDER -->
+
+        <section class="card">
+
+            <h2>
+                👮 Responder Network
+            </h2>
+
+            <p class="description">
+
+                Verified responders can receive an emergency notification
+                and determine the appropriate response.
+
+            </p>
+
+
+            <div
+                class="responder-status"
+                id="responderStatus">
+
+                No active emergency.
+
+            </div>
+
+
+            <br>
+
+
+            <button
+                class="secondary-button"
+                onclick="acknowledgeEmergency()">
+
+                RESPONDER ACKNOWLEDGE
+
+            </button>
+
+
+            <br><br>
+
+
+            <button
+                class="secondary-button"
+                onclick="resolveEmergency()">
+
+                I'M SAFE / RESOLVE
+
+            </button>
+
+        </section>
+
+
+
+        <!-- IMPORTANT -->
+
+        <p class="note">
+
+            Prototype only. This demo does not contact police, security
+            companies or emergency services. A production system would
+            require secure communications, certified hardware, privacy
+            protections, responder agreements and extensive safety testing.
+
+        </p>
+
+    </main>
+
+</div>
+
+
+
+<script>
+
+    let safetyActivated = false;
+    let emergencyActive = false;
+
+
+    /*
+    ==========================================
+    ACTIVATE PERSONAL SAFETY
+    ==========================================
+    */
+
+    function activateSafety() {
+
+        safetyActivated = true;
+
+        document.getElementById("safetyStatus").style.display = "block";
+
+        document.getElementById("activateButton").innerText =
+            "✓ SAFETY ACTIVE";
+
+        document.getElementById("networkLog").innerHTML +=
+            "<br><span class='success'>SAFETY MODE ACTIVATED</span>";
+
+    }
+
+
+
+    /*
+    ==========================================
+    EMERGENCY BUTTON
+    ==========================================
+    */
+
+    function activateEmergency() {
+
+        emergencyActive = true;
+
+        document.getElementById("emergencyAlert").style.display =
+            "block";
+
+        document.getElementById("responderStatus").innerHTML =
+            "🚨 <strong>EMERGENCY RECEIVED</strong><br>" +
+            "Nearest responder notification initiated.";
+
+        document.getElementById("networkStatus").innerText =
+            "● EMERGENCY ACTIVE";
+
+        document.getElementById("networkStatus").style.background =
+            "#fee2e2";
+
+        document.getElementById("networkStatus").style.color =
+            "#991b1b";
+
+
+        document.getElementById("networkLog").innerHTML =
+            "EMERGENCY BUTTON PRESSED<br>" +
+            "<span class='danger-text'>SOS PACKET CREATED</span><br>" +
+            "LOCATION ATTACHED<br>" +
+            "DEVICE ID: BCN-042<br>" +
+            "IDENTITY: PROTECTED";
+
+
+
+        /*
+        Simulate the network routing
+        */
+
+        setTimeout(function() {
+
+            document.getElementById("networkLog").innerHTML +=
+                "<br><span class='warning'>" +
+                "NORMAL NETWORK UNAVAILABLE" +
+                "</span>";
+
+        }, 700);
+
+
+        setTimeout(function() {
+
+            document.getElementById("networkLog").innerHTML +=
+                "<br>SEARCHING FOR NEARBY LOOK OUT DEVICES...";
+
+        }, 1400);
+
+
+        setTimeout(function() {
+
+            document.getElementById("networkLog").innerHTML +=
+                "<br><span class='success'>" +
+                "4 NEARBY DEVICES FOUND" +
+                "</span>";
+
+        }, 2100);
+
+
+        setTimeout(function() {
+
+            document.getElementById("networkLog").innerHTML +=
+                "<br>RELAYING EMERGENCY PACKET...";
+
+        }, 2800);
+
+
+        setTimeout(function() {
+
+            document.getElementById("networkLog").innerHTML +=
+                "<br><span class='success'>" +
+                "GATEWAY REACHED" +
+                "</span>";
+
+        }, 3500);
+
+
+        setTimeout(function() {
+
+            document.getElementById("networkLog").innerHTML +=
+                "<br><span class='success'>" +
+                "RESPONDER NOTIFICATION SENT" +
+                "</span>";
+
+        }, 4200);
+
+    }
+
+
+
+    /*
+    ==========================================
+    SIMULATE NETWORK FAILURE
+    ==========================================
+    */
+
+    function simulateNetworkFailure() {
+
+        document.getElementById("mobileNetwork").innerText =
+            "OFFLINE";
+
+        document.getElementById("networkStatus").innerText =
+            "● Network unavailable";
+
+        document.getElementById("networkStatus").style.background =
+            "#fef3c7";
+
+        document.getElementById("networkStatus").style.color =
+            "#92400e";
+
+
+        document.getElementById("networkLog").innerHTML =
+            "<span class='warning'>" +
+            "CELLULAR NETWORK OFFLINE" +
+            "</span><br>" +
+            "GPS/LOCATION: AVAILABLE<br>" +
+            "LOCAL RADIO: AVAILABLE<br>" +
+            "SEARCHING FOR NEARBY DEVICES...";
+
+
+        setTimeout(function() {
+
+            document.getElementById("networkLog").innerHTML +=
+                "<br><span class='success'>" +
+                "5 LOOK OUT DEVICES FOUND" +
+                "</span>";
+
+        }, 1000);
+
+
+        setTimeout(function() {
+
+            document.getElementById("networkLog").innerHTML +=
+                "<br>LOCAL MESH READY";
+
+        }, 1800);
+
+
+        setTimeout(function() {
+
+            document.getElementById("networkLog").innerHTML +=
+                "<br><span class='success'>" +
+                "EMERGENCY PACKETS CAN BE RELAYED" +
+                "</span>";
+
+        }, 2600);
+
+    }
+
+
+
+    /*
+    ==========================================
+    RESPONDER ACKNOWLEDGE
+    ==========================================
+    */
+
+    function acknowledgeEmergency() {
+
+        if (!emergencyActive) {
+
+            document.getElementById("responderStatus").innerText =
+                "There is currently no emergency.";
+
+            return;
+
+        }
+
+
+        document.getElementById("responderStatus").innerHTML =
+            "👮 <strong>RESPONDER ACKNOWLEDGED</strong><br>" +
+            "Assistance is being coordinated.";
+
+    }
+
+
+
+    /*
+    ==========================================
+    RESOLVE
+    ==========================================
+    */
+
+    function resolveEmergency() {
+
+        emergencyActive = false;
+
+        document.getElementById("emergencyAlert").style.display =
+            "none";
+
+        document.getElementById("responderStatus").innerHTML =
+            "✓ Incident marked as resolved.";
+
+        document.getElementById("networkStatus").innerText =
+            "● Network ready";
+
+        document.getElementById("networkStatus").style.background =
+            "#e9f8ed";
+
+        document.getElementById("networkStatus").style.color =
+            "#18733a";
+
+        document.getElementById("networkLog").innerHTML +=
+            "<br><span class='success'>" +
+            "INCIDENT RESOLVED" +
+            "</span>";
+
+    }
+
+</script>
+
+</body>
+</html>
